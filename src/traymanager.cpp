@@ -25,7 +25,6 @@
 #include <QTimer>
 #include <QDesktopServices>
 
-#include "appconfig.h"
 #include "appsettings.h"
 #include "db/databaseconnection.h"
 #include "forms/getinfo/getinfo.h"
@@ -90,6 +89,7 @@ TrayManager::~TrayManager() {
   delete screenshotTool;
   delete hotkeyManager;
   delete settingsWindow;
+  delete connEditorWindow;
   delete evidenceManagerWindow;
   delete creditsWindow;
 }
@@ -99,6 +99,7 @@ void TrayManager::buildUi() {
   settingsWindow = new Settings(db, hotkeyManager, this);
   evidenceManagerWindow = new EvidenceManager(db, this);
   creditsWindow = new Credits(this);
+  connEditorWindow = new ConnectionEditor(db, this);
 
   trayIconMenu = new QMenu(this);
   chooseOpSubmenu = new QMenu(tr("Select Operation"));
@@ -131,6 +132,10 @@ void TrayManager::buildUi() {
   chooseOpSubmenu->addAction(chooseOpStatusAction);
   chooseOpSubmenu->addSeparator();
 
+  openConnEditorAction = new QAction("Edit Connections", this);
+  chooseServerSubmenu->addAction(openConnEditorAction);
+  chooseServerSubmenu->addSeparator();
+
   setActiveOperationLabel();
 
   QIcon icon = QIcon(ICON);
@@ -160,6 +165,7 @@ void TrayManager::wireUi() {
   connect(showEvidenceManagerAction, actTriggered, [this, toTop](){toTop(evidenceManagerWindow);});
   connect(showCreditsAction, actTriggered, [this, toTop](){toTop(creditsWindow);});
   connect(addCodeblockAction, actTriggered, this, &TrayManager::captureCodeblockActionTriggered);
+  connect(openConnEditorAction, actTriggered, [this, toTop]() { toTop(connEditorWindow); });
 
   connect(screenshotTool, &Screenshot::onScreenshotCaptured, this,
           &TrayManager::onScreenshotCaptured);
