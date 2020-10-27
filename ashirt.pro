@@ -97,6 +97,9 @@ HEADERS += \
     src/components/tagging/tagginglineediteventfilter.h \
     src/components/tagging/tagview.h \
     src/components/tagging/tagwidget.h \
+    src/config/config.h \
+    src/config/config_v1.h \
+    src/config/no_config.h \
     src/db/databaseconnection.h \
     src/dtos/github_release.h \
     src/dtos/checkConnection.h \

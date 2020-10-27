@@ -15,6 +15,9 @@
 
 #include "exceptions/fileerror.h"
 #include "helpers/constants.h"
+#include "config/config.h"
+#include "config/config_v1.h"
+#include "config/no_config.h"
 
 // AppConfig is a singleton construct for accessing the application's configuration.
 // singleton design borrowed from:
@@ -28,99 +31,77 @@ class AppConfig {
   AppConfig(AppConfig const &) = delete;
   void operator=(AppConfig const &) = delete;
 
-  QString evidenceRepo = "";
-  QString accessKey = "";
-  QString secretKey = "";
-  QString apiURL = "";
-  QString screenshotExec = "";
-  QString screenshotShortcutCombo = "";
-  QString captureWindowExec = "";
-  QString captureWindowShortcut = "";
-  QString captureCodeblockShortcut = "";
-
-  QString errorText = "";
-
  private:
   AppConfig() noexcept {
+    _config = new NoConfig();
+
     try {
       readConfig();
     }
     catch (std::exception &e) {
-      errorText = e.what();
+      _config->setErrorText(e.what());
     }
+  }
+
+  ~AppConfig() noexcept {
+    delete _config;
   }
 
   QString saveLocation = Constants::configLocation();
 
   void readConfig() {
     QFile configFile(saveLocation);
+
     if (!configFile.open(QIODevice::ReadOnly)) {
       if (configFile.exists()) {
         throw FileError::mkError("Error reading config file", saveLocation.toStdString(),
                                  configFile.error());
       }
-      try {
-        writeDefaultConfig();
-      }
-      catch (...) {
-        // ignoring -- just trying to generate an empty config
-      }
+      writeDefaultConfig();
       return;
     }
-
     QByteArray data = configFile.readAll();
+
     if (configFile.error() != QFile::NoError) {
       throw FileError::mkError("Error reading config file", saveLocation.toStdString(),
                                configFile.error());
     }
 
-    QJsonParseError err;
-    QJsonDocument doc = QJsonDocument::fromJson(data, &err);
-    if (err.error != QJsonParseError::NoError) {
-      // ignoring specific type -- unlikely to occur in practice.
+    _config = ConfigV1::fromJson(data);
+    if (_config->errorText() != "") {
       throw std::runtime_error("Unable to parse config file");
     }
-
-    this->evidenceRepo = doc["evidenceRepo"].toString();
-    this->accessKey = doc["accessKey"].toString();
-    this->secretKey = doc["secretKey"].toString();
-    this->apiURL = doc["apiURL"].toString();
-    this->screenshotExec = doc["screenshotCommand"].toString();
-    this->screenshotShortcutCombo = doc["screenshotShortcut"].toString();
-    this->captureWindowExec = doc["captureWindowExec"].toString();
-    this->captureWindowShortcut = doc["captureWindowShortcut"].toString();
-    this->captureCodeblockShortcut = doc["captureCodeblockShortcut"].toString();
   }
 
-  void writeDefaultConfig() {
-    evidenceRepo = Constants::defaultEvidenceRepo();
-
-#ifdef Q_OS_MACOS
-    screenshotExec = "screencapture -s %file";
-    captureWindowExec = "screencapture -w %file";
-#endif
+  void writeDefaultConfig() noexcept {
+    _config = ConfigV1::generateDefaultConfig();
+    upgrade();
 
     try {
       writeConfig();
     }
-    catch (...) {
+    catch (FileError &e) {
+      Q_UNUSED(e);
       // ignoring error -- best effort approach
     }
   }
 
  public:
-  void writeConfig() {
-    QJsonObject root = QJsonObject();  // QFiles close automatically, so no need for close here.
-    root["evidenceRepo"] = evidenceRepo;
-    root["accessKey"] = accessKey;
-    root["secretKey"] = secretKey;
-    root["apiURL"] = apiURL;
-    root["screenshotCommand"] = screenshotExec;
-    root["screenshotShortcut"] = screenshotShortcutCombo;
-    root["captureWindowExec"] = captureWindowExec;
-    root["captureWindowShortcut"] = captureWindowShortcut;
-    root["captureCodeblockShortcut"] = captureCodeblockShortcut;
+  /// Upgrade changes the underlying configuration from its current version to the latest
+  /// possible version. Note that this does NOT change the underlying config file. To update the
+  /// actual file, use writeConfig()
+  bool upgrade() {
+    if (_config == nullptr) {
+      return false;
+    }
+    bool upgraded = false;
 
+    return upgraded;
+  }
+
+  /// writeConfig writes out the current internal configuration state to a file.
+  /// @throws FileError if there is an issue opening or writing the file
+  void writeConfig() {
     auto saveRoot = saveLocation.left(saveLocation.lastIndexOf("/"));
     QDir().mkpath(saveRoot);
     QFile configFile(saveLocation);
@@ -129,8 +110,7 @@ class AppConfig {
                                configFile.error());
     }
 
-    QJsonDocument doc(root);
-    auto written = configFile.write(doc.toJson());
+    auto written = configFile.write(_config->toJsonString());
     if (written == -1) {
       throw FileError::mkError("Error writing config file", saveLocation.toStdString(),
                                configFile.error());
@@ -138,6 +118,36 @@ class AppConfig {
 
     return;
   }
+
+ public:
+
+  // accessors
+  QString errorText() { return _config->errorText(); }
+
+  ConfigV1* asConfigV1() {
+    if(_config->version() == 1) {
+      return static_cast<ConfigV1*>(_config);
+    }
+    return nullptr;
+  }
+
+  QString evidenceRepo() { return _config->evidenceRepo(); }
+  QString captureScreenAreaCmd() { return _config->captureScreenAreaCmd(); }
+  QString captureScreenAreaShortcut() { return _config->captureScreenAreaShortcut(); }
+  QString captureScreenWindowCmd() { return _config->captureScreenWindowCmd(); }
+  QString captureScreenWindowShortcut() { return _config->captureScreenWindowShortcut(); }
+  QString captureCodeblockShortcut() { return _config->captureCodeblockShortcut(); }
+
+  // mutators
+  void setEvidenceRepo(QString newVal) { _config->setEvidenceRepo(newVal); }
+  void setCaptureScreenAreaCmd(QString newVal) { _config->setCaptureScreenAreaCmd(newVal); }
+  void setCaptureScreenAreaShortcut(QString newVal) { _config->setCaptureScreenAreaShortcut(newVal); }
+  void setCaptureScreenWindowCmd(QString newVal) { _config->setCaptureScreenWindowCmd(newVal); }
+  void setCaptureScreenWindowShortcut(QString newVal) { _config->setCaptureScreenWindowShortcut(newVal); }
+  void setCaptureCodeblockShortcut(QString newVal) { _config->setCaptureCodeblockShortcut(newVal); }
+
+ private:
+  Config* _config = nullptr;
 };
 
 #endif  // DATA_H
