@@ -49,10 +49,12 @@ class TrayManager : public QDialog {
   void showNoOperationSetTrayMessage();
   void checkForUpdate();
   void cleanChooseOpSubmenu();
+  void cleanChooseServerSubmenu();
 
  private slots:
   void onOperationListUpdated(bool success, const std::vector<dto::Operation> &operations);
   void onReleaseCheck(bool success, std::vector<dto::GithubRelease> releases);
+  void onTrayMenuOpened();
 
  public slots:
   void onScreenshotCaptured(const QString &filepath);
@@ -93,6 +95,10 @@ class TrayManager : public QDialog {
   QAction *chooseOpStatusAction = nullptr;
   QAction *selectedOperationAction = nullptr;  // note: do not delete; for reference only
   std::vector<QAction *> allOperationActions;
+
+  QMenu *chooseServerSubmenu = nullptr;
+  std::vector<QAction *> allServerActions;
+  QAction *selectedServerAction = nullptr;  // note: do not delete; for reference only
 };
 
 #endif  // QT_NO_SYSTEMTRAYICON
