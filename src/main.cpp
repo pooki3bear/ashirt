@@ -9,6 +9,7 @@
 void handleCLI(std::vector<std::string> args);
 
 #ifndef QT_NO_SYSTEMTRAYICON
+
 #include <QApplication>
 #include <QMessageBox>
 
@@ -18,78 +19,72 @@ void handleCLI(std::vector<std::string> args);
 #include "exceptions/databaseerr.h"
 #include "exceptions/fileerror.h"
 #include "traymanager.h"
+#include "models/type_streams.h"
 
-QDataStream& operator<<(QDataStream& out, const model::Tag& v) {
-  out << v.tagName << v.id << v.serverTagId;
-  return out;
-}
-
-QDataStream& operator>>(QDataStream& in, model::Tag& v) {
-  in >> v.tagName;
-  in >> v.id;
-  in >> v.serverTagId;
-  return in;
-}
-
-QDataStream& operator<<(QDataStream& out, const std::vector<model::Tag>& v) {
-  out << int(v.size());
-  for (auto tag : v) {
-    out << tag;
-  }
-  return out;
-}
-
-QDataStream& operator>>(QDataStream& in, std::vector<model::Tag>& v) {
-  int qty;
-  in >> qty;
-  v.reserve(qty);
-  for(int i = 0; i < qty; i++) {
-    model::Tag t;
-    in >> t;
-    v.push_back(t);
-  }
-  return in;
-}
-
-int main(int argc, char* argv[]) {
+void initResources() {
   Q_INIT_RESOURCE(res_icons);
   Q_INIT_RESOURCE(res_migrations);
+}
 
+void setApplicationAttributes() {
   QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
   QCoreApplication::setApplicationName("ashirt");
+}
 
+DatabaseConnection* createDBConnection() {
   DatabaseConnection* conn;
   try {
     conn = new DatabaseConnection();
     conn->connect();
+    return conn;
   }
   catch (FileError& err) {
     std::cout << err.what() << std::endl;
-    return -1;
   }
   catch (DBDriverUnavailableError& err) {
     std::cout << err.what() << std::endl;
-    return -1;
   }
   catch (QSqlError& e) {
     std::cout << e.text().toStdString() << std::endl;
-    return -1;
   }
   catch (std::exception& e) {
     std::cout << "Unexpected error: " << e.what() << std::endl;
-    return -1;
+  }
+  return nullptr;
+}
+
+DatabaseConnection* readySupportSystems() {
+  // load settings
+  // nothing to do here -- just make sure it's loaded
+  // (technically unnecessary, but effectively zero cost)
+  AppSettings::getInstance();
+
+  // load config
+  auto configError = AppConfig::getInstance().errorText().toStdString();
+  if (!configError.empty()) {  // quick check & preload config data
+    throw std::runtime_error("Unable to create a load configuration file: " + configError);
   }
 
-  auto configError = AppConfig::getInstance().errorText.toStdString();
-  if (!configError.empty()) {  // quick check & preload config data
+  // start database connection (+ implicitly migrate data)
+  DatabaseConnection* conn = createDBConnection();
+  if (conn == nullptr) {
+    throw std::runtime_error("Unable to create a database connection");
+  }
     std::cout << "Unable to load config file: " << configError << std::endl;
     return -1;
   }
 
-  int rtn;
+  return conn;
+}
+
+int guiMain(int argc, char* argv[]) {
+  initResources();
+  setApplicationAttributes();
+  TypeStreams::registerTypes();
+  DatabaseConnection* conn = readySupportSystems();
+
+  int exitCode;
   try {
-    qRegisterMetaTypeStreamOperators<model::Tag>("Tag");
-    qRegisterMetaTypeStreamOperators<std::vector<model::Tag>>("TagVector");
     QApplication app(argc, argv);
 
     if (!QSystemTrayIcon::isSystemTrayAvailable()) {
@@ -98,7 +93,7 @@ int main(int argc, char* argv[]) {
     QApplication::setQuitOnLastWindowClosed(false);
 
     auto window = new TrayManager(conn);
-    rtn = app.exec();
+    exitCode = app.exec();
     AppSettings::getInstance().sync();
     delete window;
   }
@@ -111,7 +106,19 @@ int main(int argc, char* argv[]) {
   conn->close();
   delete conn;
 
-  return rtn;
+  return exitCode;
+}
+
+int main(int argc, char* argv[]) {
+  try {
+    int ec = guiMain(argc, argv);
+    if( ec != 0) {
+      std::cout << "exiting with code: " << ec << std::endl;
+    }
+  }
+  catch(const std::exception& e) {
+    std::cerr << "Unhandled exception while running gui. Message: " << e.what() << " (exiting)" << std::endl;
+  }
 }
 
 #else
@@ -124,15 +131,6 @@ int main(int argc, char *argv[]) { handleCLI(std::vector<string>(argv, argv + ar
 #endif
 
 void handleCLI(std::vector<std::string> args) {
-  size_t trueCount = args.size() - 1;
-  std::cout << "You provided " << trueCount << " arguments.\n";
-  if (trueCount == 0) {
-    std::cout << "Next time try suppling some arguments." << std::endl;
-    return;
-  }
-
-  std::cout << "All arguments:" << std::endl;
-  for (size_t i = 1; i < args.size(); i++) {
-    std::cout << "\t" << args.at(i) << std::endl;
-  }
+  Q_UNUSED(args);
+  std::cout << "CLI is currently not supported.\n";
 }
