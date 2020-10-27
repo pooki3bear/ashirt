@@ -77,6 +77,14 @@ class Constants {
     return "source code pro";
   }
 
+  static QString defaultServerName() {
+    return "default";
+  }
+
+  static QString legacyServerUuid() {
+    return "20a28c7c-ea24-4ee0-bb94-0ee63018d34b"; // randomly generated value
+  }
+
  private:
   enum RepoField {
     owner = 0,
