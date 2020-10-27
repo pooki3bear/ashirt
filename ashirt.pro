@@ -116,6 +116,7 @@ HEADERS += \
     src/hotkeymanager.h \
     src/models/evidence.h \
     src/models/server.h \
+    src/models/server_setting.h \
     src/models/tag.h \
     src/models/type_streams.h \
     src/traymanager.h \

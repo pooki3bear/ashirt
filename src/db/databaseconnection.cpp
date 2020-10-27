@@ -348,7 +348,7 @@ std::vector<model::Evidence> DatabaseConnection::getEvidenceWithFilters(
 }
 
 QString DatabaseConnection::currentServer() { 
-  return ""; // TODO: get the current server uuid
+  return AppSettings::getInstance().serverUuid();
 }
 
 QString DatabaseConnection::valueOrCurrentServer(QString maybeServerUuid) {

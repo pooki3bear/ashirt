@@ -75,6 +75,9 @@ DatabaseConnection* readySupportSystems() {
   // apply System migrations
   Migration::applyMigrations(conn);
 
+  // Upgrade Settings
+  AppSettings::getInstance().upgrade();
+
   }
 
   return conn;
