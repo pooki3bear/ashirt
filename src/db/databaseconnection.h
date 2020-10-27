@@ -70,8 +70,8 @@ class DatabaseConnection {
 
   model::Evidence getEvidenceDetails(qint64 evidenceID);
   std::vector<model::Evidence> getEvidenceWithFilters(const EvidenceFilters &filters);
-
   qint64 createEvidence(const QString &filepath, const QString &operationSlug,
+                        const QString &serverUuid, const QString &contentType);
   void deleteEvidence(qint64 evidenceID);
   void updateEvidenceDescription(const QString &newDescription, qint64 evidenceID);
   void updateEvidenceError(const QString &errorText, qint64 evidenceID);
@@ -82,6 +82,7 @@ class DatabaseConnection {
  private:
   DBQuery buildGetEvidenceWithFiltersQuery(const EvidenceFilters &filters);
 
+  /// currentServer is a small helper to access AppSettings::getInstance().serverUuid()
   QString currentServer();
 
   QString valueOrCurrentServer(QString maybeServerUuid);

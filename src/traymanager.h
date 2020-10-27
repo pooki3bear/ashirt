@@ -91,7 +91,7 @@ class TrayManager : public QDialog {
 
   QMenu *chooseOpSubmenu = nullptr;
   QAction *chooseOpStatusAction = nullptr;
-  QAction *selectedAction = nullptr;  // note: do not delete; for reference only
+  QAction *selectedOperationAction = nullptr;  // note: do not delete; for reference only
   std::vector<QAction *> allOperationActions;
 };
 
