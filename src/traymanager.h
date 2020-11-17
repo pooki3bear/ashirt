@@ -17,6 +17,7 @@
 #include "helpers/screenshot.h"
 #include "hotkeymanager.h"
 #include "tools/UGlobalHotkey/uglobalhotkeys.h"
+#include "forms/add_operation/createoperation.h"
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
@@ -78,7 +79,8 @@ class TrayManager : public QDialog {
   Settings *settingsWindow = nullptr;
   EvidenceManager *evidenceManagerWindow = nullptr;
   Credits *creditsWindow = nullptr;
-  ConnectionEditor *connEditorWindow;
+  ConnectionEditor *connEditorWindow = nullptr;
+  CreateOperation *createOperationWindow = nullptr;
 
   // UI Elements
   QSystemTrayIcon *trayIcon = nullptr;
@@ -97,6 +99,8 @@ class TrayManager : public QDialog {
   QMenu *chooseOpSubmenu = nullptr;
   QAction *chooseOpStatusAction = nullptr;
   QAction *selectedOperationAction = nullptr;  // note: do not delete; for reference only
+  QAction *newOperationAction = nullptr;
+  QAction *selectedAction = nullptr;  // note: do not delete; for reference only
   std::vector<QAction *> allOperationActions;
 
   QMenu *chooseServerSubmenu = nullptr;

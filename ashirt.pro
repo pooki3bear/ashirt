@@ -63,6 +63,7 @@ SOURCES += \
     src/components/tagging/tagwidget.cpp \
     src/db/databaseconnection.cpp \
     src/forms/connections/connection_editor.cpp \
+    src/forms/add_operation/createoperation.cpp \
     src/forms/evidence_filter/evidencefilter.cpp \
     src/forms/evidence_filter/evidencefilterform.cpp \
     src/forms/getinfo/getinfo.cpp \
@@ -113,6 +114,7 @@ HEADERS += \
     src/forms/connections/connection_cell_data.h \
     src/forms/connections/connection_editor.h \
     src/forms/connections/connections_table_analysis.h \
+    src/forms/add_operation/createoperation.h \
     src/forms/evidence_filter/evidencefilter.h \
     src/forms/evidence_filter/evidencefilterform.h \
     src/forms/getinfo/getinfo.h \
