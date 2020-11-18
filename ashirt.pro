@@ -44,6 +44,7 @@ DEFINES += "VERSION_TAG=$$VERSION_TAG" \
 INCLUDEPATH += src
 
 SOURCES += \
+    src/appservers.cpp \
     src/components/aspectratio_pixmap_label/aspectratiopixmaplabel.cpp \
     src/components/aspectratio_pixmap_label/imageview.cpp \
     src/components/code_editor/codeblockview.cpp \
@@ -81,6 +82,7 @@ SOURCES += \
     src/forms/settings/settings.cpp
 
 HEADERS += \
+    src/appservers.h \
     src/components/aspectratio_pixmap_label/aspectratiopixmaplabel.h \
     src/components/aspectratio_pixmap_label/imageview.h \
     src/components/code_editor/codeblockview.h \
@@ -106,6 +108,9 @@ HEADERS += \
     src/config/config_v1.h \
     src/config/config_v2.h \
     src/config/no_config.h \
+    src/config/server_item.h \
+    src/config/server_set.h \
+    src/config/server_v2.h \
     src/db/databaseconnection.h \
     src/dtos/github_release.h \
     src/dtos/checkConnection.h \
@@ -129,7 +134,6 @@ HEADERS += \
     src/helpers/http_status.h \
     src/hotkeymanager.h \
     src/models/evidence.h \
-    src/models/server.h \
     src/models/server_setting.h \
     src/models/tag.h \
     src/models/type_streams.h \

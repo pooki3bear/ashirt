@@ -14,7 +14,6 @@
 
 #include "forms/evidence_filter/evidencefilter.h"
 #include "models/evidence.h"
-#include "models/server.h"
 
 class DBQuery {
  private:
@@ -52,22 +51,6 @@ class DatabaseConnection {
   bool hasAppliedSystemMigration(QString systemMigrationName);
   qint64 applySystemMigration(QString systemMigrationName);
 
-  std::vector<model::Server> getServers(bool includeDeleted=false);
-  model::Server getServerByUuid(QString serverUuid);
-  bool hasServer(QString serverUuid);
-  QString accessKey(QString serverUuid="");
-  QString secretKey(QString serverUuid="");
-  QString hostPath(QString serverUuid="");
-  QString serverName(QString serverUuid="");
-
-  qint64 createServer(model::Server newServer);
-  void deleteServer(QString serverUuid);
-  void restoreServer(QString serverUuid);
-  void updateServerDetails(QString newAccessKey, QString newSecretKey,
-                           QString newHostPath, QString serverUuid="");
-  void updateFullServerDetails(QString newName, QString newAccessKey, QString newSecretKey,
-                           QString newHostPath, QString serverUuid="");
-
   model::Evidence getEvidenceDetails(qint64 evidenceID);
   std::vector<model::Evidence> getEvidenceWithFilters(const EvidenceFilters &filters);
   qint64 createEvidence(const QString &filepath, const QString &operationSlug,
@@ -81,11 +64,6 @@ class DatabaseConnection {
 
  private:
   DBQuery buildGetEvidenceWithFiltersQuery(const EvidenceFilters &filters);
-
-  /// currentServer is a small helper to access AppSettings::getInstance().serverUuid()
-  QString currentServer();
-
-  QString valueOrCurrentServer(QString maybeServerUuid);
 
   /**
    * @brief getSingleField retrieves a single value/cell from the provided query. If the query

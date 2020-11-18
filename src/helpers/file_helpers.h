@@ -13,6 +13,16 @@
 #include "appsettings.h"
 #include "exceptions/fileerror.h"
 
+class FileReadResult {
+ public:
+  FileReadResult() = default;
+
+  bool success = false;
+  bool fileExists = false;
+  QByteArray data;
+  QFile* file;
+};
+
 class FileHelpers {
  public:
   /// randomText generates an arbitrary number of case-sensitive english letters
@@ -103,6 +113,24 @@ class FileHelpers {
       throw FileError::mkError("Unable to read from file", path.toStdString(), file.error());
     }
     return data;
+  }
+
+  static FileReadResult readFileNoError(QString path) {
+    QFile file(path);
+    FileReadResult result;
+    result.file = &file;
+
+    if(!file.open(QIODevice::ReadOnly)) {
+      result.success = false;
+      result.fileExists = file.exists();
+    }
+    else {
+      result.fileExists = true;
+      result.data = file.readAll();
+      result.success = file.error() == QFile::NoError;
+    }
+
+    return result;
   }
 };
 
