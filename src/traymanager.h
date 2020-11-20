@@ -14,6 +14,7 @@
 #include "forms/evidence/evidencemanager.h"
 #include "forms/settings/settings.h"
 #include "forms/connections/connection_editor.h"
+#include "forms/connections/connection_editorv2.h"
 #include "helpers/screenshot.h"
 #include "hotkeymanager.h"
 #include "tools/UGlobalHotkey/uglobalhotkeys.h"
@@ -79,7 +80,7 @@ class TrayManager : public QDialog {
   Settings *settingsWindow = nullptr;
   EvidenceManager *evidenceManagerWindow = nullptr;
   Credits *creditsWindow = nullptr;
-  ConnectionEditor *connEditorWindow = nullptr;
+  ConnectionEditorV2 *connEditorWindow = nullptr;
   CreateOperation *createOperationWindow = nullptr;
 
   // UI Elements
