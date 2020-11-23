@@ -100,7 +100,7 @@ void TrayManager::buildUi() {
   settingsWindow = new Settings(db, hotkeyManager, this);
   evidenceManagerWindow = new EvidenceManager(db, this);
   creditsWindow = new Credits(this);
-  connEditorWindow = new ConnectionEditorV2(this);
+  connEditorWindow = new ConnectionEditor(this);
   createOperationWindow = new CreateOperation(this);
 
   trayIconMenu = new QMenu(this);
