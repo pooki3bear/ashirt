@@ -13,7 +13,6 @@
 #include "forms/credits/credits.h"
 #include "forms/evidence/evidencemanager.h"
 #include "forms/settings/settings.h"
-#include "forms/connections/connection_editor.h"
 #include "forms/connections/connection_editorv2.h"
 #include "helpers/screenshot.h"
 #include "hotkeymanager.h"

@@ -63,7 +63,6 @@ SOURCES += \
     src/components/tagging/tagview.cpp \
     src/components/tagging/tagwidget.cpp \
     src/db/databaseconnection.cpp \
-    src/forms/connections/connection_editor.cpp \
     src/forms/add_operation/createoperation.cpp \
     src/forms/connections/connection_editorv2.cpp \
     src/forms/connections/connection_properties.cpp \
@@ -118,8 +117,6 @@ HEADERS += \
     src/dtos/checkConnection.h \
     src/exceptions/databaseerr.h \
     src/exceptions/fileerror.h \
-    src/forms/connections/connection_cell_data.h \
-    src/forms/connections/connection_editor.h \
     src/forms/connections/connection_editorv2.h \
     src/forms/connections/connection_properties.h \
     src/forms/connections/connections_table_analysis.h \
