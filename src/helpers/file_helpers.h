@@ -20,7 +20,7 @@ class FileReadResult {
   bool success = false;
   bool fileExists = false;
   QByteArray data;
-  QFile* file;
+  QFileDevice::FileError err;
 };
 
 class FileHelpers {
@@ -104,9 +104,9 @@ class FileHelpers {
   /// reading the file.
   static QByteArray readFile(QString path) {
     auto result = readFileNoError(path);
-    if (result.file->error() != QFile::NoError) {
+    if (result.err != QFile::NoError) {
       throw FileError::mkError("Unable to read from file", path.toStdString(),
-                               result.file->error());
+                               result.err);
     }
     return result.data;
   }
@@ -114,7 +114,6 @@ class FileHelpers {
   static FileReadResult readFileNoError(QString path) {
     QFile file(path);
     FileReadResult result;
-    result.file = &file;
 
     if(!file.open(QIODevice::ReadOnly)) {
       result.success = false;
@@ -125,7 +124,7 @@ class FileHelpers {
       result.data = file.readAll();
       result.success = file.error() == QFile::NoError;
     }
-
+    result.err = file.error();
     return result;
   }
 };
