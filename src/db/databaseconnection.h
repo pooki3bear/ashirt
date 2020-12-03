@@ -60,6 +60,8 @@ class DatabaseConnection {
   void updateEvidenceError(const QString &errorText, qint64 evidenceID);
   void updateEvidenceSubmitted(qint64 evidenceID);
 
+  std::vector<QString> operationSlugsForServer(const QString &operationSlug);
+
   void setEvidenceTags(const std::vector<model::Tag> &newTags, qint64 evidenceID);
 
  private:

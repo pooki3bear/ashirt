@@ -201,6 +201,19 @@ DBQuery DatabaseConnection::buildGetEvidenceWithFiltersQuery(const EvidenceFilte
   return DBQuery(query, values);
 }
 
+std::vector<QString> DatabaseConnection::operationSlugsForServer(const QString &serverUUID) {
+  auto resultSet = executeQuery(&db,
+      "SELECT DISTINCT operation_slug FROM evidence WHERE server_uuid=?",
+      {serverUUID});
+  std::vector<QString> rtn;
+
+  while (resultSet.next()) {
+    rtn.push_back(resultSet.value("operation_slug").toString());
+  }
+  return rtn;
+}
+
+
 std::vector<model::Evidence> DatabaseConnection::getEvidenceWithFilters(
     const EvidenceFilters &filters) {
   auto dbQuery = buildGetEvidenceWithFiltersQuery(filters);
