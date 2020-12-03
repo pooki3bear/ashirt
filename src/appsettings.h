@@ -48,6 +48,7 @@ class AppSettings : public QObject {
     int version = getVersion();
     if (version < 2) {
       upgradeToV2();
+      setVersion(2);
     }
   }
 
