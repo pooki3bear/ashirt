@@ -90,7 +90,6 @@ TrayManager::~TrayManager() {
   delete screenshotTool;
   delete hotkeyManager;
   delete settingsWindow;
-  delete connEditorWindow;
   delete evidenceManagerWindow;
   delete creditsWindow;
 }
@@ -100,7 +99,6 @@ void TrayManager::buildUi() {
   settingsWindow = new Settings(db, hotkeyManager, this);
   evidenceManagerWindow = new EvidenceManager(db, this);
   creditsWindow = new Credits(this);
-  connEditorWindow = new ConnectionEditor(this);
   createOperationWindow = new CreateOperation(this);
 
   trayIconMenu = new QMenu(this);
@@ -137,10 +135,6 @@ void TrayManager::buildUi() {
   chooseOpSubmenu->addAction(newOperationAction);
   chooseOpSubmenu->addSeparator();
 
-  openConnEditorAction = new QAction("Edit Connections", this);
-  chooseServerSubmenu->addAction(openConnEditorAction);
-  chooseServerSubmenu->addSeparator();
-
   setActiveOperationLabel();
 
   QIcon icon = QIcon(ICON);
@@ -170,7 +164,6 @@ void TrayManager::wireUi() {
   connect(showEvidenceManagerAction, actTriggered, [this, toTop](){toTop(evidenceManagerWindow);});
   connect(showCreditsAction, actTriggered, [this, toTop](){toTop(creditsWindow);});
   connect(addCodeblockAction, actTriggered, this, &TrayManager::captureCodeblockActionTriggered);
-  connect(openConnEditorAction, actTriggered, [this, toTop]() { toTop(connEditorWindow); });
   connect(newOperationAction, actTriggered, [this, toTop](){toTop(createOperationWindow);});
 
   connect(screenshotTool, &Screenshot::onScreenshotCaptured, this,

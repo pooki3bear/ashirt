@@ -13,7 +13,6 @@
 #include "forms/credits/credits.h"
 #include "forms/evidence/evidencemanager.h"
 #include "forms/settings/settings.h"
-#include "forms/connections/connection_editor.h"
 #include "helpers/screenshot.h"
 #include "hotkeymanager.h"
 #include "tools/UGlobalHotkey/uglobalhotkeys.h"
@@ -79,7 +78,6 @@ class TrayManager : public QDialog {
   Settings *settingsWindow = nullptr;
   EvidenceManager *evidenceManagerWindow = nullptr;
   Credits *creditsWindow = nullptr;
-  ConnectionEditor *connEditorWindow = nullptr;
   CreateOperation *createOperationWindow = nullptr;
 
   // UI Elements
@@ -94,7 +92,6 @@ class TrayManager : public QDialog {
   QAction *showEvidenceManagerAction = nullptr;
   QAction *showCreditsAction = nullptr;
   QAction *addCodeblockAction = nullptr;
-  QAction *openConnEditorAction;
 
   QMenu *chooseOpSubmenu = nullptr;
   QAction *chooseOpStatusAction = nullptr;
